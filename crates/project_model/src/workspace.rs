@@ -260,6 +260,7 @@ fn project_json_to_crate_graph(
                     krate.edition,
                     krate.display_name.clone(),
                     cfg_options,
+                    vec![],
                     env,
                     proc_macro.unwrap_or_default(),
                 ),
@@ -447,7 +448,7 @@ fn add_target_crate_root(
     let edition = pkg.edition;
     let cfg_options = {
         let mut opts = cfg_options.clone();
-        for feature in pkg.features.iter() {
+        for feature in pkg.enabled_features.iter() {
             opts.insert_key_value("feature".into(), feature.into());
         }
         opts.extend(pkg.cfgs.iter().cloned());
@@ -474,6 +475,7 @@ fn add_target_crate_root(
         edition,
         Some(display_name),
         cfg_options,
+        vec![],
         env,
         proc_macro.clone(),
     );
@@ -502,6 +504,7 @@ fn sysroot_to_crate_graph(
                 Edition::Edition2018,
                 Some(display_name),
                 cfg_options.clone(),
+                vec![],
                 env,
                 proc_macro,
             );

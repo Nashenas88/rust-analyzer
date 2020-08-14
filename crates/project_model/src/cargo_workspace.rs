@@ -86,7 +86,8 @@ pub struct PackageData {
     pub is_member: bool,
     pub dependencies: Vec<PackageDependency>,
     pub edition: Edition,
-    pub features: Vec<String>,
+    pub enabled_features: Vec<String>,
+    pub available_features: Vec<String>,
     pub cfgs: Vec<CfgFlag>,
     pub envs: Vec<(String, String)>,
     pub out_dir: Option<AbsPathBuf>,
@@ -192,8 +193,9 @@ impl CargoWorkspace {
 
         meta.packages.sort_by(|a, b| a.id.cmp(&b.id));
         for meta_pkg in meta.packages {
-            let cargo_metadata::Package { id, edition, name, manifest_path, version, .. } =
-                meta_pkg;
+            let cargo_metadata::Package {
+                id, edition, name, manifest_path, version, features, ..
+            } = meta_pkg;
             let is_member = ws_members.contains(&id);
             let edition = edition
                 .parse::<Edition>()
@@ -206,7 +208,8 @@ impl CargoWorkspace {
                 is_member,
                 edition,
                 dependencies: Vec::new(),
-                features: Vec::new(),
+                enabled_features: Vec::new(),
+                available_features: features.into_iter().map(|(feature, _)| feature).collect(),
                 cfgs: cfgs.get(&id).cloned().unwrap_or_default(),
                 envs: envs.get(&id).cloned().unwrap_or_default(),
                 out_dir: out_dir_by_id.get(&id).cloned(),
@@ -253,11 +256,11 @@ impl CargoWorkspace {
                 let dep = PackageDependency { name: dep_node.name, pkg };
                 packages[source].dependencies.push(dep);
             }
-            packages[source].features.extend(node.features);
+            packages[source].enabled_features.extend(node.features);
         }
 
         let workspace_root = AbsPathBuf::assert(meta.workspace_root);
-        Ok(CargoWorkspace { packages, targets, workspace_root: workspace_root })
+        Ok(CargoWorkspace { packages, targets, workspace_root })
     }
 
     pub fn packages<'a>(&'a self) -> impl Iterator<Item = Package> + ExactSizeIterator + 'a {

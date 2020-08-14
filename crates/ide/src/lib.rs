@@ -209,6 +209,7 @@ impl Analysis {
             Edition::Edition2018,
             None,
             cfg_options,
+            vec![],
             Env::default(),
             Default::default(),
         );

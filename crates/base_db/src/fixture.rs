@@ -160,6 +160,7 @@ impl ChangeFixture {
                     meta.edition,
                     Some(crate_name.clone().into()),
                     meta.cfg,
+                    vec![],
                     meta.env,
                     Default::default(),
                 );
@@ -189,6 +190,7 @@ impl ChangeFixture {
                 Edition::Edition2018,
                 Some(CrateName::new("test").unwrap().into()),
                 default_cfg,
+                vec![],
                 Env::default(),
                 Default::default(),
             );

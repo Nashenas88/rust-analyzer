@@ -18,14 +18,34 @@ pub(crate) struct Args {
 }
 
 pub(crate) enum Command {
-    Parse { no_dump: bool },
+    Parse {
+        no_dump: bool,
+    },
     Symbols,
-    Highlight { rainbow: bool },
+    Highlight {
+        rainbow: bool,
+    },
     AnalysisStats(AnalysisStatsCmd),
     Bench(BenchCmd),
-    Diagnostics { path: PathBuf, load_output_dirs: bool, with_proc_macro: bool },
-    Ssr { rules: Vec<SsrRule> },
-    StructuredSearch { debug_snippet: Option<String>, patterns: Vec<SsrPattern> },
+    Diagnostics {
+        path: PathBuf,
+        load_output_dirs: bool,
+        with_proc_macro: bool,
+    },
+    CrateOptions {
+        workspace_root: PathBuf,
+        file: PathBuf,
+        load_output_dirs: bool,
+        with_proc_macro: bool,
+        all: bool,
+    },
+    Ssr {
+        rules: Vec<SsrRule>,
+    },
+    StructuredSearch {
+        debug_snippet: Option<String>,
+        patterns: Vec<SsrPattern>,
+    },
     ProcMacro,
     RunServer,
     Version,
@@ -143,6 +163,17 @@ impl Args {
             }
         };
         let command = match subcommand.as_str() {
+            "crate-options" => Command::CrateOptions {
+                load_output_dirs: matches.contains("--load-output-dirs"),
+                with_proc_macro: matches.contains("--with-proc-macro"),
+                all: matches.contains("--all"),
+                file: matches
+                    .free_from_str()?
+                    .ok_or_else(|| format_err!("expected positional argument"))?,
+                workspace_root: matches
+                    .free_from_str()?
+                    .ok_or_else(|| format_err!("expected positional argument"))?,
+            },
             "parse" => Command::Parse { no_dump: matches.contains("--no-dump") },
             "symbols" => Command::Symbols,
             "highlight" => Command::Highlight { rainbow: matches.contains("--rainbow") },

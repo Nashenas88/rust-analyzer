@@ -35,6 +35,19 @@ fn try_main() -> Result<()> {
 
         args::Command::Parse { no_dump } => cli::parse(no_dump)?,
         args::Command::Symbols => cli::symbols()?,
+        args::Command::CrateOptions {
+            workspace_root,
+            file,
+            load_output_dirs,
+            with_proc_macro,
+            all,
+        } => cli::crate_options(
+            workspace_root.as_ref(),
+            file.as_ref(),
+            load_output_dirs,
+            with_proc_macro,
+            all,
+        )?,
         args::Command::Highlight { rainbow } => cli::highlight(rainbow)?,
         args::Command::AnalysisStats(cmd) => cmd.run(args.verbosity)?,
         args::Command::Bench(cmd) => cmd.run(args.verbosity)?,

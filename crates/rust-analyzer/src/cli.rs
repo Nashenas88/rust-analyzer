@@ -8,10 +8,13 @@ mod progress_report;
 mod ssr;
 
 use std::io::Read;
+use std::path::Path;
 
-use anyhow::Result;
+use anyhow::{bail, format_err, Result};
+use hir::Crate;
 use ide::Analysis;
 use syntax::{AstNode, SourceFile};
+use vfs::AbsPathBuf;
 
 pub use self::{
     analysis_bench::{BenchCmd, BenchWhat, Position},
@@ -45,6 +48,34 @@ pub fn parse(no_dump: bool) -> Result<()> {
         println!("{:#?}", file.syntax());
     }
     std::mem::forget(file);
+    Ok(())
+}
+
+pub fn crate_options(
+    workspace_root: &Path,
+    file: &Path,
+    load_output_dirs: bool,
+    with_proc_macro: bool,
+    _all: bool,
+) -> Result<()> {
+    let (host, vfs) = load_cargo(workspace_root, load_output_dirs, with_proc_macro)?;
+    let db = host.raw_database();
+    let analysis = host.analysis();
+
+    let abs_file = AbsPathBuf::assert(
+        std::env::current_dir()?.join(file).canonicalize().map_err(|e| format_err!("{:?}", e))?,
+    );
+    let path = vfs::VfsPath::from(abs_file);
+    let file_id = match vfs.file_id(&path) {
+        Some(file_id) => file_id,
+        None => bail!("Missing path in analysis"),
+    };
+    let krates = analysis.crate_for(file_id).map_err(|e| format_err!("{:?}", e))?;
+
+    for krate in krates {
+        let krate = Crate::from(krate);
+        println!("{:?}: {:?}", krate.display_name(db), krate.available_features(db));
+    }
     Ok(())
 }
 

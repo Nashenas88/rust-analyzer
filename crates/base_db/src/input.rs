@@ -176,6 +176,7 @@ pub struct CrateData {
     /// `Dependency` matters), this name should only be used for UI.
     pub display_name: Option<CrateDisplayName>,
     pub cfg_options: CfgOptions,
+    pub available_features: Vec<String>,
     pub env: Env,
     pub dependencies: Vec<Dependency>,
     pub proc_macro: Vec<ProcMacro>,
@@ -205,6 +206,7 @@ impl CrateGraph {
         edition: Edition,
         display_name: Option<CrateDisplayName>,
         cfg_options: CfgOptions,
+        available_features: Vec<String>,
         env: Env,
         proc_macro: Vec<ProcMacro>,
     ) -> CrateId {
@@ -213,6 +215,7 @@ impl CrateGraph {
             edition,
             display_name,
             cfg_options,
+            available_features,
             env,
             proc_macro,
             dependencies: Vec::new(),
@@ -456,6 +459,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -464,6 +468,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -472,6 +477,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -488,6 +494,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -496,6 +503,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -511,6 +519,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -519,6 +528,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -527,6 +537,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -542,6 +553,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );
@@ -550,6 +562,7 @@ mod tests {
             Edition2018,
             None,
             CfgOptions::default(),
+            vec![],
             Env::default(),
             Default::default(),
         );

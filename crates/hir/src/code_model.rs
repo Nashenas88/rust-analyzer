@@ -107,6 +107,10 @@ impl Crate {
         db.crate_graph()[self.id].display_name.clone()
     }
 
+    pub fn available_features(self, db: &dyn HirDatabase) -> Vec<String> {
+        db.crate_graph()[self.id].available_features.clone()
+    }
+
     pub fn query_external_importables(
         self,
         db: &dyn DefDatabase,
