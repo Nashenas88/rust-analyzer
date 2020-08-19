@@ -336,10 +336,13 @@ impl<'db> SemanticsImpl<'db> {
             self.db.check_canceled();
             let macro_call = token.value.ancestors().find_map(ast::MacroCall::cast)?;
             let tt = macro_call.token_tree()?;
+            println!("Got macro call token tree");
             if !tt.syntax().text_range().contains_range(token.value.text_range()) {
                 return None;
             }
+            println!("Token tree in range");
             let file_id = sa.expand(self.db, token.with_value(&macro_call))?;
+            println!("Got file id {:?}", file_id);
             let token = self
                 .expansion_info_cache
                 .borrow_mut()
@@ -516,11 +519,17 @@ impl<'db> SemanticsImpl<'db> {
 
         let container = match self.with_ctx(|ctx| ctx.find_container(src)) {
             Some(it) => it,
-            None => return SourceAnalyzer::new_for_resolver(Resolver::default(), src),
+            None => {
+                println!("No resolver");
+                return SourceAnalyzer::new_for_resolver(Resolver::default(), src);
+            }
         };
+
+        println!("Container? {:?}", container);
 
         let resolver = match container {
             ChildContainer::DefWithBodyId(def) => {
+                println!("Def with body id!");
                 return SourceAnalyzer::new_for_body(self.db, def, src, offset)
             }
             ChildContainer::TraitId(it) => it.resolver(self.db.upcast()),

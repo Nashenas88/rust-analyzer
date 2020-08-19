@@ -338,6 +338,38 @@ fn bar() {
     }
 
     #[test]
+    fn goto_def_from_inside_macro_to_item_outside() {
+        check(
+            r#"
+//- /lib.rs
+struct Foo;
+     //^^^
+
+macro_rules! foo {
+    () => {
+        $crate::Foo<|>
+    }
+}
+"#
+        )
+    }
+
+    #[test]
+    fn goto_def_for_macro_metavars() {
+        check(
+            r#"
+//- /lib.rs
+macro_rules! foo {
+    ($x:tt) => {
+   //^^
+        $x<|>
+    }
+}
+"#
+        )
+    }
+
+    #[test]
     fn goto_def_for_use_alias() {
         check(
             r#"
